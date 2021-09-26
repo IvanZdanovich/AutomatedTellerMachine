@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class ATM implements iATM {
+public class ATM implements IATM {
 
     private static final int REFILL_RESTRICTION = 1_000_000;
     private String id_ATM;
@@ -170,25 +170,22 @@ public class ATM implements iATM {
     }
 
     private boolean checkInputValue(int inputValue) {
-        if (inputValue < 1) {
-            return false;
-        }
-        return true;
+        return inputValue >= 1;
     }
 
-    public String getId_ATM() {
+    String getId_ATM() {
         return id_ATM;
     }
 
-    public int getCashInATM() {
+    int getCashInATM() {
         return cashInATM;
     }
 
-    public void setCashInATM(int cashInATM) {
+    void setCashInATM(int cashInATM) {
         this.cashInATM = cashInATM;
     }
 
-    public void setId_ATM(String id_ATM) {
+    void setId_ATM(String id_ATM) {
         this.id_ATM = id_ATM;
     }
 

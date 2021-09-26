@@ -1,8 +1,10 @@
+import java.math.BigDecimal;
+
 public class CardAccount {
     private static final String NUMBER_FORMAT = "\\d{4}-\\d{4}-\\d{4}-\\d{4}";
     private String number;
     private String pin;
-    private int balance;
+    private BigDecimal balance;
     private boolean block;
     private boolean access;
     private int remainingAttempts;
@@ -10,7 +12,7 @@ public class CardAccount {
     public CardAccount() {
     }
 
-    public CardAccount(String number, String pin, int balance) {
+    public CardAccount(String number, String pin, BigDecimal balance) {
         this.number = number;
         this.pin = pin;
         this.balance = balance;
@@ -19,65 +21,64 @@ public class CardAccount {
         remainingAttempts = 3;
     }
 
-    public static String getNumberFormat() {
+    protected static String getNumberFormat() {
         return NUMBER_FORMAT;
     }
 
-    public String getNumber() {
+    protected String getNumber() {
         return number;
     }
 
-    public void setNumber(String number) {
+    protected void setNumber(String number) {
         this.number = number;
     }
 
-    public String getPin() {
+    protected String getPin() {
         return pin;
     }
 
-    public void setPin(String pin) {
+    protected void setPin(String pin) {
         this.pin = pin;
     }
 
-    public int getBalance() {
+    protected BigDecimal getBalance() {
         return balance;
     }
 
-    public void setBalance(int balance) {
+    protected void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 
-    public boolean isBlock() {
+    protected boolean isBlock() {
         return block;
     }
 
-    public void setBlock(boolean block) {
+    protected void setBlock(boolean block) {
         this.block = block;
     }
 
-    public boolean isAccess() {
+    protected boolean isAccess() {
         return access;
     }
 
-    public void setAccess(boolean access) {
+    protected void setAccess(boolean access) {
         this.access = access;
     }
 
-
-    public int getRemainingAttempts() {
+    protected int getRemainingAttempts() {
         return remainingAttempts;
     }
 
-    public void setRemainingAttempts(int remainingAttempts) {
+    protected void setRemainingAttempts(int remainingAttempts) {
         this.remainingAttempts = remainingAttempts;
     }
 
-    public CardAccount fromStringArray(String[] records) {
+    protected CardAccount fromStringArray(String[] records) {
         CardAccount cardAccount = new CardAccount();
         try {
             cardAccount.setNumber(records[0]);
             cardAccount.setPin(records[1]);
-            cardAccount.setBalance(Integer.parseInt(records[2]));
+            cardAccount.setBalance(new BigDecimal(records[2]));
             cardAccount.setBlock(Boolean.parseBoolean(records[3]));
             cardAccount.setAccess(Boolean.parseBoolean(records[4]));
             cardAccount.setRemainingAttempts(Short.parseShort(records[5]));
@@ -87,7 +88,7 @@ public class CardAccount {
         return cardAccount;
     }
 
-    public String[] toStringArray() {
+    protected String[] toStringArray() {
         String[] cardAccount = new String[6];
         cardAccount[0] = getNumber();
         cardAccount[1] = getPin();

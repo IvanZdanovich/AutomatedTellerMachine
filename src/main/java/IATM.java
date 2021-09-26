@@ -1,4 +1,4 @@
-public interface iATM {
+public interface IATM {
 
     String getStringValue();
 

@@ -1,6 +1,10 @@
 # Text files
 *.docx
 
+# XML & JSON files
+*.xml
+*.json
+
 # Compiled class file
 *.class
 
