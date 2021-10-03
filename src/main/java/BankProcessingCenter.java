@@ -6,7 +6,7 @@ public class BankProcessingCenter {
 
     private List<VisaCardAccount> visaDatabase;
     private List<MastercardCardAccount> mastercardDatabase;
-    private List<ATM> atmDatabase;
+    private List<ATMSiemens> atmSiemensDatabase;
     private PaymentSystems cardAccountType;
     private CardAccount cardAccount;
 
@@ -15,7 +15,7 @@ public class BankProcessingCenter {
         this.visaDatabase = DatabaseAPI.readVisaDatabase();
         this.mastercardDatabase = DatabaseAPI.readMastercardDatabase();
         //load database with ATM
-        this.atmDatabase = DatabaseAPI.readATMDatabase();
+        this.atmSiemensDatabase = DatabaseAPI.readATMDatabase();
     }
 
     boolean deposit(int value) {
@@ -115,6 +115,7 @@ public class BankProcessingCenter {
         return cardAccount.getRemainingAttempts();
     }
 
+    //TODO: returning object CardAccount should be store to the private variable cardAccount
     boolean authorize(String cardNumber) {
         /*Check that the card number matches the format,
         determine the database to find the account*/
@@ -132,6 +133,7 @@ public class BankProcessingCenter {
         return false;
     }
 
+    //TODO: make return type CardAccount
     void findVisaCardAccount(String number) {
         for (VisaCardAccount visaCardAccount : this.visaDatabase) {
             if (number.equals(visaCardAccount.getNumber())) {
@@ -148,10 +150,10 @@ public class BankProcessingCenter {
         }
     }
 
-    ATM findATM(String number) {
-        for (ATM atm : this.atmDatabase) {
-            if (number.equals(atm.getId_ATM())) {
-                return atm;
+    ATMSiemens findATM(String number) {
+        for (ATMSiemens atmSiemens : this.atmSiemensDatabase) {
+            if (number.equals(atmSiemens.getId_ATM())) {
+                return atmSiemens;
             }
         }
         return null;
@@ -173,10 +175,10 @@ public class BankProcessingCenter {
         return strings;
     }
 
-    private List<String[]> convertATMDatabaseToStrings(List<ATM> database) {
+    private List<String[]> convertATMDatabaseToStrings(List<ATMSiemens> database) {
         List<String[]> strings = new ArrayList<>();
-        for (ATM atm : database) {
-            strings.add(atm.toStringArray());
+        for (ATMSiemens atmSiemens : database) {
+            strings.add(atmSiemens.toStringArray());
         }
         return strings;
     }
@@ -185,6 +187,6 @@ public class BankProcessingCenter {
         //upload data to databases
         DatabaseAPI.writeMastercardDatabase(this.convertMastercardDatabaseToStrings(this.mastercardDatabase));
         DatabaseAPI.writeVisaDatabase(this.convertVisaDatabaseToStrings(this.visaDatabase));
-        DatabaseAPI.writeATMDatabase(this.convertATMDatabaseToStrings(this.atmDatabase));
+        DatabaseAPI.writeATMDatabase(this.convertATMDatabaseToStrings(this.atmSiemensDatabase));
     }
 }

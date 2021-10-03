@@ -47,10 +47,10 @@ public class DatabaseAPI {
         return database;
     }
 
-    static List<ATM> readATMDatabase() {
-        List<ATM> database = new ArrayList<>();
+    static List<ATMSiemens> readATMDatabase() {
+        List<ATMSiemens> database = new ArrayList<>();
         for (String[] stringsElement : readDatabase(ATM_DATABASE_FILE_PATH)) {
-            database.add(new ATM().fromStringArray(stringsElement));
+            database.add(new ATMSiemens().fromStringArray(stringsElement));
         }
         return database;
     }
