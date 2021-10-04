@@ -8,18 +8,15 @@ abstract class AbstractATM {
     int cashInATM;
     String cardNumber;
     BankProcessingCenter bankProcessingCenter;
-    boolean exitFlag;
-    boolean escapeFlag;
-
-    public AbstractATM() {
-    }
+    boolean closeApplication;
+    boolean closeSession;
 
     public void pickUpCard() {
-        System.out.println("Welcome, Dear customer");
-        while (!exitFlag) {
+        while (!closeApplication) {
+            System.out.println("Welcome, Dear customer");
             if (authorize()) {
-                escapeFlag = false;
-                while (!escapeFlag) {
+                closeSession = false;
+                while (!closeSession) {
                     if (checkPIN()) {
                         openMenu();
                     }
@@ -32,6 +29,10 @@ abstract class AbstractATM {
     protected boolean authorize() {
         System.out.println("Please enter your card number or 0 to exit");
         cardNumber = getStringValue();
+        if (!cardNumber.matches("[\\d-]+")) {
+            System.out.println("Please enter only digits or dash character");
+            return false;
+        }
         if (cardNumber.equals("0")) {
             return false;
         }
@@ -40,18 +41,26 @@ abstract class AbstractATM {
                     "It should be: XXXX-XXXX-XXXX-XXXX");
             return false;
         }
-        return bankProcessingCenter.authorize(cardNumber);
+        if (!bankProcessingCenter.authorize(cardNumber)) {
+            System.out.println("Account not found");
+            return false;
+        }
+        return true;
     }
 
     protected boolean checkPIN() {
         System.out.println("Please enter your PIN to perform an operation or 0 to exit");
         String pinCode = null;
         while (pinCode == null) {
-            pinCode = getStringValue();
+            try {
+                pinCode = getStringValue();
+            } catch (Exception e) {
+                System.out.println("Exception");
+            }
         }
         if (pinCode.equals("0")) {
             returnCard();
-            escapeFlag = true;
+            closeSession = true;
             return false;
         }
         if (bankProcessingCenter.isBlocked()) {
@@ -85,7 +94,7 @@ abstract class AbstractATM {
                 withdraw();
                 break;
             case 0:
-                escapeFlag = true;
+                closeSession = true;
                 break;
             default:
                 System.out.println("You entered an incorrect value. Only 1, 2, 3 " +
@@ -101,6 +110,9 @@ abstract class AbstractATM {
     protected void withdraw() {
         System.out.println("Enter the cash removal amount");
         int cash = getIntegerValue();
+        if (!checkInputValue(cash)) {
+            return;
+        }
         if (cash > this.cashInATM) {
             System.out.println("Not enough money in ATM");
             return;
@@ -127,7 +139,7 @@ abstract class AbstractATM {
     protected void deposit() {
         System.out.println("Enter the amount to deposit");
         Integer depositAmount = getIntegerValue();
-        if (depositAmount == null) {
+        if (!checkInputValue(depositAmount)) {
             return;
         }
         if (depositAmount > REFILL_RESTRICTION) {
@@ -135,43 +147,26 @@ abstract class AbstractATM {
                     "Please specify a value less than " + REFILL_RESTRICTION);
             return;
         }
-        if (!checkInputValue(depositAmount)) {
-            System.out.println("You entered the value less than 1");
-            return;
-        }
         if (bankProcessingCenter.deposit(depositAmount)) {
             this.setCashInATM(this.getCashInATM() + depositAmount);
-            System.out.println("Operation was successfully completed.");
+            System.out.println("Operation was successfully completed");
         } else {
             System.out.println("Access denied");
             checkAccessStatus();
         }
     }
 
-    public String getStringValue() {
-        String value = null;
-        try {
-            value = new Scanner(System.in).nextLine();
-            if (!value.matches("[\\d-]+")) {
-                throw new Exception("Entered value is incorrect");
-            }
-        } catch (Exception e) {
-            System.out.println("Please enter only digits or dash character");
-        }
-        return value;
+    //TODO: Rename getCardNUmber and getPIN
+    protected String getStringValue() {
+        return new Scanner(System.in).nextLine();
     }
 
-    public Integer getIntegerValue() {
-        Integer value = null;
+    protected Integer getIntegerValue() {
         try {
-            value = new Scanner(System.in).nextInt();
-            if (!checkInputValue(value)) {
-                throw new Exception("Entered integer is less than 1");
-            }
+            return new Scanner(System.in).nextInt();
         } catch (Exception e) {
-            System.out.println("Please enter an natural integer.");
+            return null;
         }
-        return value;
     }
 
     protected void checkAccessStatus() {
@@ -182,9 +177,14 @@ abstract class AbstractATM {
 
     protected boolean checkInputValue(Integer inputValue) {
         if (inputValue == null) {
+            System.out.println("Entered value is not a natural integer");
             return false;
         }
-        return inputValue > 0;
+        if (inputValue < 0) {
+            System.out.println("Entered integer is less than 1");
+            return false;
+        }
+        return true;
     }
 
     protected String getId_ATM() {

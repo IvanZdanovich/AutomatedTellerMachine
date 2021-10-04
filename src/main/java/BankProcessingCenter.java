@@ -74,6 +74,9 @@ public class BankProcessingCenter {
     }
 
     boolean checkPIN(String pin) {
+        if (cardAccount == null) {
+            return false;
+        }
         cardAccount.setAccess(false);
         // abort checking if account is blocked
         if (cardAccount.isBlock()) {
@@ -115,39 +118,37 @@ public class BankProcessingCenter {
         return cardAccount.getRemainingAttempts();
     }
 
-    //TODO: returning object CardAccount should be store to the private variable cardAccount
     boolean authorize(String cardNumber) {
         /*Check that the card number matches the format,
         determine the database to find the account*/
         if (checkNumberFormat(cardNumber) && determineCardAccountType(cardNumber)) {
             if (cardAccountType.equals(PaymentSystems.VISA)) {
-                findVisaCardAccount(cardNumber);
-                return true;
+                this.cardAccount = findVisaCardAccount(cardNumber);
+                return this.cardAccount != null;
             } else if (cardAccountType.equals(PaymentSystems.MASTERCARD)) {
-                findMastercardCardAccount(cardNumber);
-                return true;
-            } else {
-                return false;
+                this.cardAccount = findMastercardCardAccount(cardNumber);
+                return this.cardAccount != null;
             }
         }
         return false;
     }
 
-    //TODO: make return type CardAccount
-    void findVisaCardAccount(String number) {
+    VisaCardAccount findVisaCardAccount(String number) {
         for (VisaCardAccount visaCardAccount : this.visaDatabase) {
             if (number.equals(visaCardAccount.getNumber())) {
-                this.cardAccount = visaCardAccount;
+                return visaCardAccount;
             }
         }
+        return null;
     }
 
-    void findMastercardCardAccount(String number) {
+    MastercardCardAccount findMastercardCardAccount(String number) {
         for (MastercardCardAccount mastercardCardAccount : this.mastercardDatabase) {
             if (number.equals(mastercardCardAccount.getNumber())) {
-                this.cardAccount = mastercardCardAccount;
+                return mastercardCardAccount;
             }
         }
+        return null;
     }
 
     ATMSiemens findATM(String number) {
